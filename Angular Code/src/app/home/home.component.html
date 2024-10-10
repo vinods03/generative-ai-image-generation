@@ -1,0 +1,29 @@
+<form [formGroup]="promptForm" (ngSubmit)="onSubmit()">
+
+    <div class="row mb-3">
+        <div class="col">
+            <label class="form-label">Prompt:</label>
+            <input class="form-control" type="text" formControlName="prompt">
+            <small class="text-danger" *ngIf="promptForm.get('prompt')?.invalid && promptForm.get('prompt')?.touched">
+                Please enter the prompt text
+            </small>
+        </div>
+    </div>
+
+    <button class="btn btn-primary" style="margin-right:20px" type="submit" [disabled]="promptForm.invalid">Submit</button>
+    <button class="btn btn-primary" (click)="onReset()">Reset</button>
+
+</form>
+
+<br>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Image URL:</th>
+        </tr>
+    </thead>
+    <tbody>
+        <td>{{imageUrl}}</td>
+   </tbody>
+</table>
