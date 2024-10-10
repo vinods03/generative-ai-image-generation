@@ -1,0 +1,116 @@
+================================================== Initial Setup ==================================================
+
+Visual Studio Code
+
+File -> Open Folder -> Angular2024 (C -> Vinod -> Angular2024)
+
+New Terminal
+
+ng new bedrock-image-generation-app -> Say y for routing & select CSS for styling.
+
+cd bedrock-image-generation-app
+
+Note that under bedrock-image-generation-app, there will be src -> app -> app.component.ts, app.component.html, app.component.css, app.module.ts, app-routing.module.ts etc.
+
+ng serve -o
+
+You will see the default Angular page now
+
+Remove everything except <router-outlet></router-outlet> in app.component.html & add <div class="container"></div>
+
+<div class="container">
+  <router-outlet></router-outlet>
+</div>
+
+You will see an empty page now
+
+Ctrl+C to stop the service
+
+================================================== the main page / form / component ==================================================
+
+ng generate module home
+
+Under bedrock-image-generation-app -> src -> app -> home sub-folder will be created
+
+ng generate component home --module=home
+
+Under bedrock-image-generation-app -> src -> app -> home -> home.component.ts, home.component.html, home.component.css, home.module.ts etc will be created
+
+This page / component should have the prompt text and must be able to show the pre-signed url returned from lambda that interacts with the bedrock service.
+
+Then update app.module.ts -> import required modules like HomeModule, HttpClientModule, FormsModule, ReactiveFormsModule on top of existing ones
+
+Then update app-routing.module.ts -> add path - route. for ex: path: "", component: HomeComponent
+
+Then update home.module.ts to have Forms related modules so that user input form can be built in home component
+
+Then update home.component.ts with onInit and onSubmit and formbuilder code
+
+Then update home.component.html with the form code in html
+
+Make CSS changes for styling:
+
+npm install bootstrap@5.3
+
+In styles.css, add @import "~bootstrap/dist/css/bootstrap.min.css"
+
+================================================== hookup Frontend i.e. the Presentation tier with API i.e. the Application layer ==================================================
+
+ng generate service home/bedrock-image-generation-service
+
+ng generate interface models/bedrock-image-generation-model
+
+Update the bedrock image generation model - bedrock-image-generation-model.ts - with the fields from the above form / Frontend. 
+
+Now time to update the bedrock-image-generation-service.service.ts. 
+Before that, in AWS Console, make sure to enable CORS in the API and copy the API get URL into bedrock-image-generation-service.service.ts.
+
+Add the getImageUrl method in bedrock-image-generation-service using the above URL.
+
+Update the form component to invoke the above method now:
+
+In home.component.ts -> onSubmit() section, invoke the getImageUrl method created in the bedrock-image-generation-service. 
+
+In home.component.html -> below the form, add a table that will hold the returned image URL
+
+Ensure lambda returns image url as a value with the key as 'body'
+
+In API Gateway -> GET -> Integration reponse: add $input.json('$.body') to segregate the actual values that need to be displayed in the front-end.
+
+Verify by providing a prompt in the text box. You should get an Image URL in return. Use it in the browser to download image and check the image.
+
+================================================ deploy the app / front-end in S3 for public access ==============================================
+
+Now time to host the web app publicly.
+
+In AWS Console, Create an S3 bucket - vinodfinalmovieposterdesignbucket. Uncheck "Block Public Access". Edit the Bucket Policy and put in: 
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "PublicRead",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::vinodfinalmovieposterdesignbucket/*"
+        }
+    ]
+}
+
+Enable static web hosting.
+
+Go back to your local machine where the angular app was built. Execute ng-build:
+C:\Vinod\Angular2024\bedrock-image-generation-app>ng build
+
+dist folder should get created in C:\Vinod\Angular2024\bedrock-image-generation-app
+
+Copy the files under "dist" into vinodfinalmovieposterdesignbucket S3 bucket.
+
+Copy the bucket website endpoint into the browser and verify the behaviour of the app is the same as during local testing.
+
+Note: Remember to disable the static web hosting, enable "Block Public Access" and remove the bucket policy to ensure no one is able to misuse your project.
+Each time a Bedrock call is made, there is a cost involved.
+
+
+

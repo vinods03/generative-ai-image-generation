@@ -1,0 +1,10 @@
+Create lambda function - bedrockImageGenerationFn.py - that invokes the Stability AI image generation model.
+
+The response which is a streaming body is converted into bytes, then decode the bytes into an image, upload the image into an S3 bucket and finally generate/return a pre-signed URL for the image.
+
+Test the lambda function by configuring the below key-value pair as a Test event:
+{
+  "prompt": "Rain in Chennai"
+}
+
+Ensure lambda function has bedrock access and s3 access.

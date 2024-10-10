@@ -1,0 +1,22 @@
+Create a REST API bedrockImageGenerationAPI
+
+Under this, create the resource bedrock-image-generation-resource
+
+Under this, create a GET method invoking the lambda function created in prior step
+
+In "Method Request" settings, choose "Validate query string parameters and headers" and under "URL query string parameters", add "prompt" and set "required" to true.
+
+In Integration Request, under "Mapping Templates" add: {"prompt":"$input.params('prompt')"}
+
+In Integration Response, under "Mapping Templates" add: $input.json('$.body') (assuming the lambda function returns the image URL under the key 'body')
+
+Test the API Gateway - Lambda integration, you should get the pre-signed URL from lambda into API Gateway
+
+Enable CORS and deploy API
+
+Now test the API Gateway - Lambda  from POSTMAN and you should get the pre-signed URL from lambda into API Gateway
+Choose Method as GET, URL as: https://4dcyq1di1g.execute-api.us-east-1.amazonaws.com/prod/bedrock-image-generation-resource
+Under Params, Query Params -> add Key as prompt and Value as Rain in Chennai
+Note that, this translates the URL to https://4dcyq1di1g.execute-api.us-east-1.amazonaws.com/prod/bedrock-image-generation-resource?prompt=Indian King
+If path parameter is used instead of query string parameter, the URL will be https://4dcyq1di1g.execute-api.us-east-1.amazonaws.com/prod/bedrock-image-generation-resource/Indian King
+This URL is important for the Angular section -> BedrockImageGenerationServiceService
